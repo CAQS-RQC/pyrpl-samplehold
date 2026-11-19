@@ -126,10 +126,20 @@ def _get_filename(filename=None):
     # get extension right
     if not filename.endswith(".yml"):
         filename = filename + ".yml"
-    # see if filename is found with given path, or in user_config or in default_config
+    # A path that exists is used as given. A bare name is looked up in the
+    # working directory, then its parent (the repo root when launched from
+    # pyrpl-samplehold), and only then in the user and default config dirs.
     p, f = os.path.split(filename)
-    for path in [p, user_config_dir, default_config_dir]:
-        file = os.path.join(path, f)
+    if p:
+        candidates = [os.path.abspath(os.path.join(p, f))]
+    else:
+        candidates = [
+            os.path.abspath(os.path.join(os.getcwd(), f)),
+            os.path.abspath(os.path.join(os.getcwd(), os.pardir, f)),
+        ]
+    candidates += [os.path.join(user_config_dir, f),
+                   os.path.join(default_config_dir, f)]
+    for file in candidates:
         if os.path.isfile(file):
             return file
     # file not existing, place it in user_config_dir

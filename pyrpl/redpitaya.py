@@ -317,9 +317,22 @@ class RedPitaya(object):
         self.end()
         self.ssh.ask('killall nginx')
         self.ssh.ask('systemctl stop redpitaya_nginx') # for 0.94 and higher
-        self.ssh.ask('cat '
-                 + os.path.join(self.parameters['serverdirname'], self.parameters['serverbinfilename'])
-                 + ' > //dev//xdevcfg')
+        bitfile = os.path.join(self.parameters['serverdirname'],
+                               self.parameters['serverbinfilename'])
+        # OS 2 programmed the PL through the xdevcfg device node. On OS 3 that
+        # path is not a device, so a redirect creates an ordinary file and the
+        # stock bitstream stays loaded. fpgautil writes the FPGA manager.
+        load = (
+            'if [ -c /dev/xdevcfg ]; then cat "%s" > /dev/xdevcfg; '
+            'else rm -f /dev/xdevcfg; /opt/redpitaya/bin/fpgautil -b "%s" -f Full; fi'
+        ) % (bitfile, bitfile)
+        old_delay = self.ssh.delay
+        self.ssh.delay = max(old_delay, 15)
+        try:
+            result = self.ssh.ask(load)
+        finally:
+            self.ssh.delay = old_delay
+        self.logger.info("FPGA load result: %s", result.strip())
         sleep(self.parameters['delay'])
         self.ssh.ask('rm -f '+ os.path.join(self.parameters['serverdirname'], self.parameters['serverbinfilename']))
         self.ssh.ask("nginx -p //opt//www//")
