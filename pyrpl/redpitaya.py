@@ -472,6 +472,8 @@ class RedPitaya(object):
         self.startserver()
         sleep(self.parameters['delay'])
         self.startclient()
+        if self.parameters['leds_off']:
+            self.hk.led = 0
 
     def end(self):
         self.endserver()

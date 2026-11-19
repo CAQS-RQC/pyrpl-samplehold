@@ -4,6 +4,11 @@ from pyrpl.modules import Module
 from pyrpl.attributes import *
 from .test_redpitaya import TestRedpitaya
 
+try:
+    integer_types = (int, long)  # Python 2
+except NameError:
+    integer_types = (int,)
+
 
 class TestRegisters(TestRedpitaya):
     """
@@ -43,7 +48,7 @@ class TestRegisters(TestRedpitaya):
             # try to read
             value = module.__getattribute__(regkey)
             # make sure Register represents an int
-            if not isinstance(value, int) and not isinstance(value, long):
+            if not isinstance(value, integer_types):
                 assert False, 'wrong type: int/long != %s' % str(type(value))
             # write back to it to test setter
             module.__setattr__(regkey, value)

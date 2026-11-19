@@ -31,7 +31,7 @@ class TestPyrpl(object):
                 os.remove(tmp_conf)
             # sometimes, an earlier test delete file between exists and
             # remove calls, this gives a WindowsError
-            except WindowsError:
+            except OSError:
                 pass
         while os.path.exists(tmp_conf):
             pass  # make sure the file is really gone before proceeding further

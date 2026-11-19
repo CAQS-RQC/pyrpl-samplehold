@@ -555,8 +555,11 @@ class MemoryTree(MemoryBranch):
         # first check if a reload was not performed recently (speed up reasons)
         if self._filename is None:
             return
-        # check whether reload timeout has expired
-        if time() > self._lastreload + self._loadsavedeadtime:
+        # A deadtime of 0 means every access must see the file as it is now.
+        # time() does not move between two calls in the same tick, so a
+        # strict greater-than check would skip that reload.
+        if (self._loadsavedeadtime <= 0 or
+                time() > self._lastreload + self._loadsavedeadtime):
             # prepare next timeout
             self._lastreload = time()
             logger.debug("Checking change time of config file...")
@@ -623,7 +626,7 @@ class MemoryTree(MemoryBranch):
         if deadtime is None:
             deadtime = self._loadsavedeadtime
         # now write current tree structure and data to file
-        if self._lastsave + deadtime < time():
+        if deadtime <= 0 or self._lastsave + deadtime < time():
             self._write_to_file()
         else:
             # make sure saving will eventually occur by launching a timer

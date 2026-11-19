@@ -6,6 +6,10 @@ __license__ = "GNU General Public License 3 (GPLv3)"
 # manage warnings of numpy and scipy
 import warnings
 import numpy as np
+# NumPy 1.24 removed the builtin aliases this branch still uses as dtypes.
+for _alias, _builtin in (("complex", complex), ("float", float), ("int", int)):
+    if not hasattr(np, _alias):
+        setattr(np, _alias, _builtin)
 # pyqtgraph is throwing a warning on ScatterPlotItem
 warnings.simplefilter("ignore", np.VisibleDeprecationWarning)
 # pyqtgraph is throwing a warning on ScatterPlotItem
