@@ -99,7 +99,7 @@ class NaPointFuture(PyrplFuture):
             if point is not None:
                 self.set_result(point)
             else:
-                self._timer.setInterval(self._min_delay_ms)
+                self._timer.setInterval(int(self._min_delay_ms))
                 self._timer.start()
 
     def set_exception(self, exception):

@@ -18,6 +18,12 @@ except ImportError:  # this occurs in python 2.7
                   "instead of python 3.5 Futures.")
     from concurrent.futures import Future, CancelledError, TimeoutError
 else:
+    # Python 3.10 moved these ABCs. quamash still imports them from collections.
+    import collections
+    import collections.abc
+    for _name in ("Mapping", "MutableMapping", "Sequence", "Iterable", "Iterator", "Callable"):
+        if not hasattr(collections, _name):
+            setattr(collections, _name, getattr(collections.abc, _name))
     import quamash
     set_event_loop(quamash.QEventLoop())
     LOOP = quamash.QEventLoop()
@@ -94,7 +100,7 @@ class MainThreadTimer(QtCore.QTimer):
         super(MainThreadTimer, self).__init__()
         self.moveToThread(MAIN_THREAD)
         self.setSingleShot(True)
-        self.setInterval(interval)
+        self.setInterval(int(interval))
 
 
 

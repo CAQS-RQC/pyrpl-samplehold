@@ -62,6 +62,11 @@ try:
 except:  # pragma: no cover
     pass
 
+# pyqtgraph >= 0.13 removed GraphicsWindow; this branch still subclasses it.
+import pyqtgraph as pg
+if not hasattr(pg, "GraphicsWindow"):
+    pg.GraphicsWindow = pg.GraphicsLayoutWidget
+
 # main imports
 from .redpitaya import RedPitaya
 from .hardware_modules import *

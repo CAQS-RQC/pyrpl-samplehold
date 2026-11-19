@@ -104,7 +104,7 @@ class CurveFuture(PyrplFuture):
             if self._module.running_state in ["paused", "stopped"]:
                 self._module._free_up_resources()
         else:
-            self._timer.setInterval(self.min_delay_ms)
+            self._timer.setInterval(int(self.min_delay_ms))
             self._timer.start()
 
     def set_exception(self, exception):  # pragma: no cover
