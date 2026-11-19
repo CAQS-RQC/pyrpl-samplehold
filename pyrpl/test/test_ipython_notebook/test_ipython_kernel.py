@@ -84,24 +84,29 @@ exceptions = ['async_acquisition.ipynb',  # fails in python-37
               'tutorial.ipynb'  # fails in python-36
               ]
 
-# iterate through all notebooks and run tests
-for notebook in \
-        (glob(NOTEBOOK_DIR+"/*.ipynb") + glob(TUTORIAL_DIR+'/*.ipynb')):
-    for exception in exceptions:
-        _, filename = os.path.split(notebook)
-        if filename in exceptions:
-            print("Skipping notebook: %s" % notebook)
+def test_notebooks():
+    """Run example notebooks. Must not execute at import time."""
+    import asyncio
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        asyncio.set_event_loop(asyncio.new_event_loop())
+    for notebook in (
+        glob(NOTEBOOK_DIR + "/*.ipynb") + glob(TUTORIAL_DIR + "/*.ipynb")
+    ):
+        for exception in exceptions:
+            _, filename = os.path.split(notebook)
+            if filename in exceptions:
+                print("Skipping notebook: %s" % notebook)
+                sys.stdout.flush()
+                break
+        else:
+            print("Testing notebook: %s" % notebook)
             sys.stdout.flush()
-            break
-    else:
-        print("Testing notebook: %s"%notebook)
-        sys.stdout.flush()
-        nb, errors = _notebook_run(notebook)
-        assert errors == []
-        # Make sure the kernel is running the current python version...
-        #assert nb['cells'][0]['outputs'][0]['text'].rstrip('\n')==sys.version
-        print("Finished testing notebook: %s"%notebook)
-        sys.stdout.flush()
+            nb, errors = _notebook_run(notebook)
+            assert errors == []
+            print("Finished testing notebook: %s" % notebook)
+            sys.stdout.flush()
 
 
 

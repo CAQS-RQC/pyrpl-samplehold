@@ -23,8 +23,7 @@ class TestRegisters(TestRedpitaya):
                 for regkey, regclass in type(module).__dict__.items():
                     if isinstance(regclass, BaseRegister):
                         logger.info("Scanning register %s...", regkey)
-                        yield self.register_validation, module, modulekey, \
-                              regclass, regkey
+                        self.register_validation(module, modulekey, regclass, regkey)
 
     def register_validation(self, module, modulekey, reg, regkey):
         logger.debug("%s %s", modulekey, regkey)

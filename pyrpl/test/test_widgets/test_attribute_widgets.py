@@ -31,7 +31,7 @@ class TestAttributeWidgets(TestPyrpl):
                 widget = mod._create_widget()
                 for name, aw in widget.attribute_widgets.items():
                     if isinstance(aw, NumberAttributeWidget):
-                        yield self.assert_spin_box, mod, widget, name, aw
+                        self.assert_spin_box(mod, widget, name, aw)
 
     _TEST_SPINBOX_BUTTON_DOWN_TIME = 0.05
 

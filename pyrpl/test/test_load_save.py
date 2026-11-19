@@ -84,7 +84,7 @@ class TestLoadSave(TestPyrpl):
                 if isinstance(mod, exclude):
                     break
             else:
-                yield self.assert_load_save_module, mod
+                self.assert_load_save_module(mod)
                 # make sure all modules are stopped at the end of this test
                 try:
                     mod.stop()
